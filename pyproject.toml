@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lens-review"
+version = "0.0.1"
+description = "The Lens — review: human accept/reject/edit of candidates; promote to the verified library."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Liz Osborn" }]
+keywords = ["the-lens", "systems-observatory", "knowledge-mapping", "nearly-decomposable"]
+# Stdlib-only at runtime by design, so `lens-review --help` works the moment pip install completes.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+lens-review = "lens_review.launch:main"
+
+[project.urls]
+Homepage = "https://github.com/Lizo-RoadTown/lens-review"
+Repository = "https://github.com/Lizo-RoadTown/lens-review"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lens_review"]
