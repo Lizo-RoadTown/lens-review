@@ -1,38 +1,68 @@
-# lens-review — build-out plan (self-directed)
+# lens-review — directions for building yourself out
 
-This is lens-review's own plan for working itself out. Work top-down; check items off
-and append what you learned. Precedent to consult (not to copy as identity): the decomposition method +
-PROVES run log in the lens-core repo (github.com/Lizo-RoadTown/lens-core —
-`docs/decomposition/proves/process-log.md` and `skills/decomposition/SKILL.md`),
-the PROVES source itself (read-only), and the PROVES spine
-`staging_extractions → validation_decisions → core_entities`.
+This is not a spec. It orients you: how decomposition works, which piece you are,
+where the source is, and the constraints that hold. You derive what to build by
+working the source.
 
-## What lens-review must become
+## 1. You figure out what to build — from the source
 
-- [ ] **1. List pending candidates.** Read `candidates` awaiting review and present
-  them for a human decision.
-- [ ] **2. Accept / reject / edit.** A UI or CLI that records each human action in
-  `decisions`. Reviewer identity comes from **auth**, never a hardcoded user.
-- [ ] **3. Promotion.** A promotion function that moves an accepted candidate into
-  `verified`.
-- [ ] **4. The `review` CLI.** Runs list → decide → promote end-to-end.
-- [ ] **5. Tests.** Pending-list read, decision writes, promotion logic. Mirror the
-  stdlib + pytest style of `tapestry-cli`.
+This repo was **not** handed a specification of what to build. What this module
+actually does, and how, is derived by **deliberately working the original source**.
+A repo cannot understand its piece from the outside. No outside agent here walked the
+real build — nothing in this file was written with friction against the actual source,
+so treat nothing here as authoritative. It is a starting orientation, not a plan to
+execute.
 
-### Migrate-from (precedent, generalize — do not copy as identity)
-- PROVES dashboard `PendingExtractions.tsx` / `ExtractionDetail.tsx` +
-  `useExtractions.ts` (the `record_human_decision` RPC).
-- Promotion `promote_to_verified_knowledge` (migration 009).
-- Curator batch `production/curator/`.
+## 2. How decomposition works
 
-### FIX these PROVES gaps
-- `ExtractionDetail` was a disconnected mock — **wire it for real**.
-- Reviewer identity came from a hardcoded `'dashboard_user'` — **take it from auth**.
+The Lens uses a **nearly-decomposable architecture**: modules have tight coupling
+*internally* and loose coupling *across boundaries*. They meet only on well-defined
+interfaces — a shared bus (the schema) — and otherwise stay out of each other's
+internals. The full method lives in the `decomposition` skill in the lens-core repo
+(`skills/decomposition/SKILL.md`). Read it; don't restate it from memory.
 
-## What you own vs. don't
-Own: `decisions` + `verified` writes. Do NOT implement intake, serve, or observe
-here — those are the sibling repos. lens-review only reviews and promotes.
+## 3. Your piece + the fragment map
 
-## Record as you go
-Append here: what you built, what you needed, what's missing, what you had to decide.
-Also write it to loom-memory scoped to `lens-review`. This log is capture-before-loss.
+**Your piece:** lens-review is **review** — it reads `candidates`, records human
+decisions in `decisions`, and promotes accepted candidates into `verified`. This is
+the "humans establish truth" step. You do not do intake, serving, or observation.
+
+**The fragment map** — all the pieces and how they meet on the shared bus:
+
+- **lens-core** — defines the shared schema (the bus) + module composition + launcher.
+- **lens-ingest** — writes `candidates` + `sources`.
+- **lens-review** — reads `candidates`, writes `decisions` + `verified`.
+- **lens-serve** — reads `verified` (API + MCP).
+- **lens-observe** — reads activity, writes/serves signals.
+
+Coordinate only through the shared schema. Stay in your piece; don't absorb a sibling's
+work.
+
+## 4. The source — go work it
+
+The original source is **PROVES** (read-only) — the system The Lens was decomposed
+from. A map of it lives in lens-core `docs/decomposition/proves/process-log.md`.
+
+The parts relevant to your piece, **as places to START looking** (not a spec to copy):
+
+- PROVES dashboard `PendingExtractions.tsx` / `ExtractionDetail.tsx` and
+  `useExtractions.ts`.
+- The RPCs `promote_to_verified_knowledge` (migration 009) and `record_human_decision`
+  (migration 012).
+- PROVES `production/curator/`.
+
+Read the actual source, understand how it really works, and derive what this module
+should be. Where any sketch here conflicts with the source or your own investigation,
+**the source and your investigation win.** Then write down what you learned.
+
+## 5. Structural constraints that hold regardless
+
+- The database connection is **injected via `LENS_DB_URL`**, never hardcoded.
+- Write only to the schema defined in lens-core (you write `decisions` + `verified`).
+- Avoid the PROVES anti-patterns: parsing LLM prose as control flow; hardcoded
+  `sys.path`; inline DB-URL.
+
+## 6. Record as you go
+
+Append here what you learned, what you needed, and what's still missing. Also write it
+to loom-memory scoped to `lens-review`. This log is capture-before-loss.
