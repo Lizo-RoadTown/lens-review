@@ -18,8 +18,9 @@ execute.
 The Lens uses a **nearly-decomposable architecture**: modules have tight coupling
 *internally* and loose coupling *across boundaries*. They meet only on well-defined
 interfaces — a shared bus (the schema) — and otherwise stay out of each other's
-internals. The full method lives in the `decomposition` skill in the lens-core repo
-(`skills/decomposition/SKILL.md`). Read it; don't restate it from memory.
+internals. The full method lives in **Surveyor**, the decomposition component
+(`Lizo-RoadTown/surveyor`, local `C:/Users/Liz/surveyor`), at
+`skills/decomposition/SKILL.md`. Read it; don't restate it from memory.
 
 ## 3. Your piece + the fragment map
 
@@ -41,7 +42,9 @@ work.
 ## 4. The source — go work it
 
 The original source is **PROVES** (read-only) — the system The Lens was decomposed
-from. A map of it lives in lens-core `docs/decomposition/proves/process-log.md`.
+from. Its maps live in Surveyor under `docs/decomposition/proves/`: the module map
+(`module-map.md`, which says which modules this repo receives), the dashboard, database
+and backend inventories, and the run log.
 
 The parts relevant to your piece, **as places to START looking** (not a spec to copy):
 
